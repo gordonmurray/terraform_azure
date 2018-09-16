@@ -19,7 +19,8 @@ resource "azurerm_public_ip" "test" {
   }
 }
 
-resource "azurerm_virtual_network" "main" {
+module "virtual_network" {
+  source   = "./modules/azure/virtual_network/"
   name                = "${var.prefix}-network"
   address_space       = ["10.0.0.0/16"]
   location            = "${module.resource_group.resource_group_location}"
@@ -29,7 +30,7 @@ resource "azurerm_virtual_network" "main" {
 resource "azurerm_subnet" "internal" {
   name                 = "internal"
   resource_group_name  = "${module.resource_group.resource_group_name}"
-  virtual_network_name = "${azurerm_virtual_network.main.name}"
+  virtual_network_name = "${module.virtual_network.virtual_network_name}"
   address_prefix       = "10.0.2.0/24"
 }
 
