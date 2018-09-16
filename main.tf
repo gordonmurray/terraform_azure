@@ -20,14 +20,15 @@ resource "azurerm_public_ip" "test" {
 }
 
 module "virtual_network" {
-  source   = "./modules/azure/virtual_network/"
+  source              = "./modules/azure/virtual_network/"
   name                = "${var.prefix}-network"
   address_space       = ["10.0.0.0/16"]
   location            = "${module.resource_group.resource_group_location}"
   resource_group_name = "${module.resource_group.resource_group_name}"
 }
 
-resource "azurerm_subnet" "internal" {
+module "subnet" {
+  source               = "./modules/azure/subnet/"
   name                 = "internal"
   resource_group_name  = "${module.resource_group.resource_group_name}"
   virtual_network_name = "${module.virtual_network.virtual_network_name}"
@@ -41,7 +42,7 @@ resource "azurerm_network_interface" "main" {
 
   ip_configuration {
     name                          = "${var.prefix}-ip-configuration"
-    subnet_id                     = "${azurerm_subnet.internal.id}"
+    subnet_id                     = "${module.subnet.subnet_id}"
     private_ip_address_allocation = "dynamic"
     public_ip_address_id          = "${azurerm_public_ip.test.id}"
   }
@@ -49,7 +50,7 @@ resource "azurerm_network_interface" "main" {
 
 resource "azurerm_virtual_machine" "main" {
   name                  = "${var.prefix}-vm"
-  location            = "${module.resource_group.resource_group_location}"
+  location              = "${module.resource_group.resource_group_location}"
   resource_group_name   = "${module.resource_group.resource_group_name}"
   network_interface_ids = ["${azurerm_network_interface.main.id}"]
   vm_size               = "Standard_DS1_v2"
