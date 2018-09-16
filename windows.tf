@@ -2,7 +2,7 @@ variable "prefix" {
   default = "windows"
 }
 
-resource "azurerm_network_interface" "main" {
+resource "azurerm_network_interface" "windows" {
   name                = "${var.prefix}-nic"
   location            = "${module.resource_group.resource_group_location}"
   resource_group_name = "${module.resource_group.resource_group_name}"
@@ -19,7 +19,7 @@ resource "azurerm_virtual_machine" "windows" {
   name                  = "${var.prefix}-vm"
   location              = "${module.resource_group.resource_group_location}"
   resource_group_name   = "${module.resource_group.resource_group_name}"
-  network_interface_ids = ["${azurerm_network_interface.main.id}"]
+  network_interface_ids = ["${azurerm_network_interface.windows.id}"]
   vm_size               = "Standard_DS1_v2"
 
   storage_image_reference {
