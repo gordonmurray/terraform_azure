@@ -8,15 +8,12 @@ module "resource_group" {
   location = "West Europe"
 }
 
-resource "azurerm_public_ip" "test" {
+module "public_ip" {
+  source                       = "./modules/azure/public_ip/"
   name                         = "${var.prefix}-publicIP"
   location                     = "${module.resource_group.resource_group_location}"
   resource_group_name          = "${module.resource_group.resource_group_name}"
   public_ip_address_allocation = "dynamic"
-
-  tags {
-    environment = "Staging"
-  }
 }
 
 module "virtual_network" {
@@ -44,7 +41,7 @@ resource "azurerm_network_interface" "main" {
     name                          = "${var.prefix}-ip-configuration"
     subnet_id                     = "${module.subnet.subnet_id}"
     private_ip_address_allocation = "dynamic"
-    public_ip_address_id          = "${azurerm_public_ip.test.id}"
+    public_ip_address_id          = "${module.public_ip.public_ip_id}"
   }
 }
 
