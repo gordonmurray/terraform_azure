@@ -3,7 +3,7 @@ variable "linux_prefix" {
 }
 
 data "local_file" "pem" {
-  filename = "/home/gordon/.ssh/id_rsa.pub"
+  filename = "/home/ubuntu/.ssh/id_rsa.pub"
 }
 
 resource "azurerm_network_interface" "linux" {
